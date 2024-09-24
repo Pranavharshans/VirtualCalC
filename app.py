@@ -5,14 +5,14 @@ from cvzone.HandTrackingModule import HandDetector
 import google.generativeai as genai
 from PIL import Image
 
-# Initialize gemini
+# Initialize gemini replace with gemini api key
 genai.configure(api_key="GENERATIVEAI_API_KEY")
 model = genai.GenerativeModel('gemini-1.5-flash')
 
-# Initialize the HandDetector class with the given parameters
+
 detector = HandDetector(staticMode=False, maxHands=1, modelComplexity=0, detectionCon=0.75, minTrackCon=0.75)
 
-# Initialize the webcam to capture video
+
 cap = cv2.VideoCapture(0)
 
 if not cap.isOpened():
@@ -24,10 +24,10 @@ def initialize_canvas(frame):
 
 def process_hand(hand):
     lmList = hand["lmList"]  
-    bbox = hand["bbox"]  # Bounding box around the hand (x,y,w,h coordinates)
-    center = hand['center']  # Center coordinates of the hand
-    handType = hand["type"]  # Type of the hand ("Left" or "Right")
-    fingers = detector.fingersUp(hand)  # Count the number of fingers up
+    bbox = hand["bbox"]  
+    center = hand['center']  
+    handType = hand["type"] 
+    fingers = detector.fingersUp(hand)  
     return lmList, bbox, center, handType, fingers
 
 def weighted_average(current, previous, alpha=0.5):
@@ -42,11 +42,11 @@ def send_to_ai(model, canvas, fingers):
         response = model.generate_content(["solve this math problem", image])
         response_text = response.text if response else None
 
-# Initialize variables
+
 prev_pos = None
 drawing = False
-points = []  # Store points for drawing
-smooth_points = None  # Smoothed position
+points = []  
+smooth_points = None  
 
 # Initialize canvas
 _, frame = cap.read()
@@ -105,7 +105,7 @@ while True:
             prev_pos = None
             smooth_points = None
 
-        elif fingers[4] == 1 and all(f == 0 for f in fingers[:4]):  # Pinky finger up only (send to AI gesture)
+        elif fingers[4] == 1 and all(f == 0 for f in fingers[:4]):  # Pinky finger up only (send to AI gesture/ finish the input)
             send_to_ai(model, canvas, fingers)
 
     # Draw polyline on the canvas
